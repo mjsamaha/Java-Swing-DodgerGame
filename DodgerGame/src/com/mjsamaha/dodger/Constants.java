@@ -57,4 +57,21 @@ public class Constants {
 		public static final float DEFAULT_MUSIC_VOL = 0.9f;
 		public static final float DEFAULT_SFX_VOL = 0.8f;
 	}
+	
+	public static final class GameLoop {
+		// Target updates per second (game logic)
+		public static final int TARGET_TPS = 60;
+		
+		// Target frames per second (rendering)
+		public static final int TARGET_FPS = 60;
+		
+		// Enable VSync if available (overrides TARGET_FPS)
+		public static final boolean VSYNC_ENABLED = false;
+		
+		// Display FPS/TPS debug information
+		public static final boolean SHOW_DEBUG_INFO = true;
+		
+		// Maximum frame time to prevent spiral of death
+		public static final float MAX_FRAME_TIME = 0.25f;
+	}
 }

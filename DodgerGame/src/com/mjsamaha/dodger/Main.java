@@ -20,6 +20,11 @@ public class Main {
 		w.setLocationRelativeTo(null);
 		w.setVisible(true);
 		
+		// Add shutdown hook for proper cleanup
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			gp.cleanup();
+		}));
+		
 		gp.startGame();
 		
 	}

@@ -4,11 +4,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
 
 import javax.swing.JPanel;
-import javax.swing.Timer;
 
 import com.mjsamaha.dodger.Constants;
 import com.mjsamaha.dodger.audio.AudioManager;
@@ -18,10 +15,9 @@ import com.mjsamaha.dodger.rendering.GameRenderer;
 import com.mjsamaha.dodger.systems.CollisionDetector;
 import com.mjsamaha.dodger.systems.ObjectSpawner;
 
-public class GamePanel extends JPanel implements ActionListener {
+public class GamePanel extends JPanel {
     
-    private Timer timer;
-    private long lastUpdateTime;
+    private GameLoop gameLoop;
     
     // Core game components
     private Player player;
@@ -47,7 +43,8 @@ public class GamePanel extends JPanel implements ActionListener {
         
         addKeyListener(inputHandler);
         
-        timer = new Timer(1000 / 60, this);
+        // Create game loop with separate update/render threads
+        gameLoop = new GameLoop(this);
         
         player = new Player(
             Constants.Player.START_X, 
@@ -74,13 +71,26 @@ public class GamePanel extends JPanel implements ActionListener {
     }
     
     public void startGame() {
-        lastUpdateTime = System.nanoTime();
-        timer.start();
+        gameLoop.start();
         audioManager.playBackgroundMusic();
         requestFocusInWindow();
     }
     
-    private void updateGame(float dt) {
+    /**
+     * Updates game logic. Called by GameLoop at fixed TPS.
+     * @param dt Delta time (fixed timestep)
+     */
+    public void updateGame(float dt) {
+        // Check for restart request
+        if (gameStateManager.isRestartRequested()) {
+            restartGame();
+            return;
+        }
+        
+        if (gameStateManager.isGameOver()) {
+            return; // Don't update if game is over
+        }
+        
         // Handle player movement
         inputHandler.handlePlayerMovement(player, dt);
         player.keepWithinBounds(getWidth(), getHeight());
@@ -102,50 +112,54 @@ public class GamePanel extends JPanel implements ActionListener {
         }
     }
     
+    /**
+     * Renders the game. Called by GameLoop at target FPS.
+     * @param alpha Interpolation factor for smooth rendering
+     */
+    public void renderGame(double alpha) {
+        repaint();
+    }
+    
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         Graphics2D g2d = (Graphics2D) g;
         
-        gameRenderer.render(g2d, player, objectSpawner.getFallingObjects(), 
-                          gameStateManager, getWidth(), getHeight());
-    }
-    
-    @Override
-    public void actionPerformed(ActionEvent e) {
-        // Check for restart request
-        if (gameStateManager.isRestartRequested()) {
-            restartGame();
+        // Use interpolated rendering for smooth visuals
+        if (gameLoop != null && gameLoop.isRunning()) {
+            gameRenderer.renderInterpolated(g2d, player, objectSpawner.getFallingObjects(), 
+                    gameStateManager, getWidth(), getHeight(), 
+                    gameLoop.getAlpha(), gameLoop.getPerformanceMonitor());
+        } else {
+            // Fallback for initial rendering before game loop starts
+            gameRenderer.render(g2d, player, objectSpawner.getFallingObjects(), 
+                    gameStateManager, getWidth(), getHeight());
         }
-        
-        if (!gameStateManager.isGameOver()) {
-            // Calculate delta time
-            long currentTime = System.nanoTime();
-            float dt = (currentTime - lastUpdateTime) / 1_000_000_000.0f;
-            lastUpdateTime = currentTime;
-            
-            updateGame(dt);
-        }
-        repaint();
     }
     
     private void restartGame() {
-        lastUpdateTime = System.nanoTime();
-        
         // Reset player position
         player.setX(Constants.Player.START_X);
         player.setY(Constants.Player.START_Y);
+        player.updatePreviousPosition(); // Reset interpolation
         
         // Reset all game components
         gameStateManager.reset();
         inputHandler.reset();
         objectSpawner.reset();
         
+        // Reset performance monitor
+        if (gameLoop != null) {
+            gameLoop.getPerformanceMonitor().reset();
+        }
+        
         audioManager.playBackgroundMusic();
     }
     
     public void cleanup() {
-    	timer.stop();
+        if (gameLoop != null) {
+            gameLoop.stop();
+        }
     	audioManager.cleanup();
     }
 }
