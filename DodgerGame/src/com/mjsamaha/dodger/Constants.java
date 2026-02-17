@@ -5,7 +5,6 @@ import java.awt.Color;
 public class Constants {
 	
 	public static final class Window {
-		
 		public static final int WINDOW_WIDTH = 800;
 		public static final int WINDOW_HEIGHT = 600;
 		
