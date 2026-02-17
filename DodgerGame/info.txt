@@ -1,0 +1,10 @@
+
+objects fall from top of screen
+
+player must avoid them by moving left and right, plus up and down
+
+no assets, just shapes with colors
+
+player = blue square
+objects = red square
+
