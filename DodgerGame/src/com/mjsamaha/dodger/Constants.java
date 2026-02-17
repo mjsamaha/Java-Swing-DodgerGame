@@ -32,5 +32,30 @@ public class Constants {
 		
 		public static final Color OBJECT_COLOR = Color.RED;
 		
+		// Array of possible colors for falling objects
+		public static final Color[] OBJECT_COLORS = {
+			Color.RED,
+			Color.GREEN,
+			Color.YELLOW,
+			Color.ORANGE,
+			Color.MAGENTA,
+			new Color(255, 0, 255),   // Purple/Pink
+			new Color(0, 255, 255),   // Cyan
+			new Color(255, 100, 100)  // Light Red
+		};
+		
+		// Difficulty progression settings
+		public static final float INITIAL_SPAWN_INTERVAL = 1.0f;  // Start spawning every 1 second
+		public static final float MIN_SPAWN_INTERVAL = 0.3f;      // Maximum difficulty: spawn every 0.3 seconds
+		public static final float DIFFICULTY_INCREASE_RATE = 0.01f; // Decrease spawn interval by 0.01 every second
+	}
+	
+	public static final class Audio {
+		public static final String BG_MUSIC = "assets/audio/background.wav";
+		public static final String SFX_COLLISION = "assets/audio/collision.wav";
+		public static final String SCORE_SOUND = "assets/audio/score.wav";
+		
+		public static final float DEFAULT_MUSIC_VOL = 0.9f;
+		public static final float DEFAULT_SFX_VOL = 0.8f;
 	}
 }

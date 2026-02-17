@@ -3,6 +3,8 @@ package com.mjsamaha.dodger;
 import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 
+import com.mjsamaha.dodger.core.GamePanel;
+
 public class Main {
 	
 	public static void init() {
