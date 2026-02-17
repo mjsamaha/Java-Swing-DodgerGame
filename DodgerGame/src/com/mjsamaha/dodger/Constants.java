@@ -14,7 +14,6 @@ public class Constants {
 		
 	}
 
-	
 	public static final class Player {
 		public static final int START_X = 200;
 		public static final int START_Y = 350;
@@ -33,12 +32,5 @@ public class Constants {
 		
 		public static final Color OBJECT_COLOR = Color.RED;
 		
-		
 	}
-	
-	
-	
-	
-	
-
 }

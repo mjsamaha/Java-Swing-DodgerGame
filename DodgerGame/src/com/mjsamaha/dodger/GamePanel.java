@@ -2,6 +2,7 @@ package com.mjsamaha.dodger;
 
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.RenderingHints;
@@ -27,7 +28,6 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 	
 	public boolean gameOver;
 	
-	
 	// objects
 	public Player player;
 	
@@ -37,6 +37,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 	// obj spawning
 	private float spawnTimer;
 	private float spawnInterval;
+	
+	private int score;
 	
 	public GamePanel() {
 		setPreferredSize(new Dimension(Constants.Window.WINDOW_WIDTH, Constants.Window.WINDOW_HEIGHT));
@@ -61,6 +63,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 		moveRight = false;
 		moveUp = false;
 		moveDown = false;
+		
+		score = 0;
 	}
 	
 	public void startGame() {
@@ -106,6 +110,7 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 			Objects obj = iterator.next();
 			if (obj.isOffScreen(getHeight())) {
 				iterator.remove();
+				score++; // increase score for each object that falls off screen
 			}
 		}
 		
@@ -151,13 +156,23 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 			
 			// Draw game elements here
 			player.draw(g2d);
+			
+			// render score
+			g2d.setColor(Color.WHITE);
+			g2d.setFont(new Font("Arial", Font.BOLD, 24));
+			g2d.drawString("Score: " + score, 10, 30);
 		}
 		
 		// draw game over message
 		if (gameOver) {
-			g2d.setColor(Color.WHITE);
-			g2d.drawString("GAME OVER! Press R to restart", getWidth() / 2 - 100, getHeight() / 2);
-		}
+	        g2d.setColor(Color.WHITE);
+	        g2d.setFont(new Font("Arial", Font.BOLD, 32));
+	        g2d.drawString("GAME OVER!", getWidth() / 2 - 100, getHeight() / 2 - 20);
+	        
+	        g2d.setFont(new Font("Arial", Font.PLAIN, 20));
+	        g2d.drawString("Final Score: " + score, getWidth() / 2 - 70, getHeight() / 2 + 20);
+	        g2d.drawString("Press R to restart", getWidth() / 2 - 80, getHeight() / 2 + 50);
+	    }
 	}
 	
 	@Override
@@ -236,6 +251,8 @@ public class GamePanel extends JPanel implements ActionListener, KeyListener {
 		// reset spawn timer
 		spawnTimer = 0;
 		spawnInterval = 1.0f;
+		
+		score = 0;
 		
 		moveLeft = false;
 		moveRight = false;
