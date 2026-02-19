@@ -84,8 +84,8 @@ public class GameRenderer {
     }
     
     private void drawDebugInfo(Graphics2D g2d, PerformanceMonitor perfMonitor, int panelHeight) {
-        g2d.setColor(new Color(255, 255, 0, 200)); // Semi-transparent yellow
-        g2d.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        g2d.setColor(Color.WHITE); // Semi-transparent yellow
+        g2d.setFont(new Font("Arial", Font.BOLD, 12));
         
         String debugText = String.format("FPS: %d | TPS: %d | Avg FPS: %.1f | Avg TPS: %.1f",
                 perfMonitor.getFps(), perfMonitor.getTps(), 
